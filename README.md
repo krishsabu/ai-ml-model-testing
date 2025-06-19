@@ -21,8 +21,6 @@ Dynamic Prompt Generation: Currently integrating GPT-4o Mini to simulate realist
 
 **AI Red Teaming Agent – Azure Implementation**
 
-![AI Red Teaming Agent - Azure Implementation](AI Red Teaming Agent - Azure Implementation.PNG)
-
 Red Teaming Framework in Azure AI Studio: Leading the implementation of an AI Red Teaming Agent using Microsoft Azure AI Studio, focusing on risk assessment and safety evaluation of LLMs.
 
 Scenario Coverage with Red Teaming Datasets: Utilized Microsoft’s pre-built red teaming datasets and developed custom attack prompts targeting misinformation, hate speech, self-harm encouragement, malicious content generation, and jailbreak attempts.

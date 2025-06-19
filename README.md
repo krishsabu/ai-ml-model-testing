@@ -16,3 +16,16 @@ NLP-Driven Evaluation: Applied advanced NLP techniques such as tokenization, lem
 AI Model Performance Verification: Assessed response quality through semantic similarity techniques (cosine similarity) and Natural Language Understanding models.
 
 Dynamic Prompt Generation: Currently integrating GPT-4o Mini to simulate realistic user inputs, enhancing interaction quality and ensuring the completeness and appropriateness of responses.
+
+**AI Red Teaming Agent – Azure Implementation
+**
+
+Red Teaming Framework in Azure AI Studio: Leading the implementation of an AI Red Teaming Agent using Microsoft Azure AI Studio, focusing on risk assessment and safety evaluation of LLMs.
+
+Scenario Coverage with Red Teaming Datasets: Utilized Microsoft’s pre-built red teaming datasets and developed custom attack prompts targeting misinformation, hate speech, self-harm encouragement, malicious content generation, and jailbreak attempts.
+
+Custom Evaluation Logic & Policy Checks: Extended the red teaming agent with custom evaluator logic and policy enforcement mechanisms to align with organizational and ethical standards.
+
+Automated Prompt & Response Evaluation: Automated red teaming workflows using predefined prompt templates and dynamic scenario generation, evaluating responses for toxicity, bias, data leakage, and misuse potential using Azure Content Safety APIs.
+
+Monitoring, Scoring, and Feedback Loop: Captured prompt-response pairs in structured logs, including severity ratings and category tags, ingested into monitoring pipelines via Azure Monitor and visualized through dashboards.

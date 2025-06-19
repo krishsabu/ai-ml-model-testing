@@ -4,8 +4,7 @@ This repository contains the framework and implementations for testing AI/ML mod
 
 Key Components
 
-**Multi-Channel AI Service Testing Project
-**
+**Multi-Channel AI Service Testing Project**
 --- Testing Framework Development:
 
 Designed and implemented end-to-end testing frameworks to validate a Conversational AI solution aimed at automating customer interactions for a leading utility provider.
@@ -17,8 +16,7 @@ AI Model Performance Verification: Assessed response quality through semantic si
 
 Dynamic Prompt Generation: Currently integrating GPT-4o Mini to simulate realistic user inputs, enhancing interaction quality and ensuring the completeness and appropriateness of responses.
 
-**AI Red Teaming Agent – Azure Implementation
-**
+**AI Red Teaming Agent – Azure Implementation**
 
 Red Teaming Framework in Azure AI Studio: Leading the implementation of an AI Red Teaming Agent using Microsoft Azure AI Studio, focusing on risk assessment and safety evaluation of LLMs.
 

@@ -3,7 +3,9 @@ This repository contains the framework and implementations for testing AI/ML mod
 
 
 Key Components
-1. Multi-Channel AI Service Testing Project
+
+**Multi-Channel AI Service Testing Project
+**
 Testing Framework Development:
 
 Designed and implemented end-to-end testing frameworks to validate a Conversational AI solution aimed at automating customer interactions for a leading utility provider.

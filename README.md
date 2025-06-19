@@ -35,6 +35,8 @@ Monitoring, Scoring, and Feedback Loop: Captured prompt-response pairs in struct
 
 **AI Content Safety Testing**
 
+![AI Red Teaming Agent - Azure Implementation](AI-Content-Safety.PNG)
+
 Risk-Based Evaluation Using PyRIT: Executed AI content safety tests with PyRIT, addressing sensitive content domains such as hate speech, violence, self-harm, misinformation, and bias through targeted scripts and model behavior validation against ethical and regulatory standards.
 
 Custom Scoring Framework: Designed a severity-based scoring system using machine learning and Azure Content Safety guidelines to evaluate AI responses from a user risk perspective, with scoring ranging from 1–5 to quantify threat levels.

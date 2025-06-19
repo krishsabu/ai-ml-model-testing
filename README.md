@@ -16,7 +16,6 @@ AI Model Performance Verification: Assessed response quality through semantic si
 
 Dynamic Prompt Generation: Currently integrating GPT-4o Mini to simulate realistic user inputs, enhancing interaction quality and ensuring the completeness and appropriateness of responses.
 
-<iframe src="multi-channel-ai-testing.html" width="100%" height="500" frameborder="0"></iframe>
 
 **AI Red Teaming Agent – Azure Implementation**
 

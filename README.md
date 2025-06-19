@@ -7,7 +7,7 @@ Key Components
 **Multi-Channel AI Service Testing Project**
 --- Testing Framework Development:
 
-![Multi-Channel AI Service Testing Project](multi-channel-ai-testing.png)
+![Multi-Channel AI Service Testing Project]((multi-channel-ai-testing.png)
 
 
 Designed and implemented end-to-end testing frameworks to validate a Conversational AI solution aimed at automating customer interactions for a leading utility provider.

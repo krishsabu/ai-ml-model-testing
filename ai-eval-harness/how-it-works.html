@@ -1,0 +1,159 @@
+  <!-- BUDGET MODEL -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2>Bounded Cost by Design</h2>
+      <p class="section-sub">
+        Two separate budget envelopes. Every LLM-call pathway bounded by batch size
+        or daily cap. Verdict-bearing evaluation is never the place to economise.
+      </p>
+
+      <div class="baseline-grid">
+        <div class="baseline-card">
+          <h3>📡 B_continuous — L1-b Online Evaluators</h3>
+          <p>Runs 24/7 against production traffic. Controlled by daily caps per use case, not monthly batch formulas.</p>
+          <ul>
+            <li>Uses a cheap model (L1B_JUDGE_LLM) — not the calibrated verdict judge</li>
+            <li>Regulated: 500 traces/day cap</li>
+            <li>Critical: 200 traces/day cap</li>
+            <li>Standard: 50 traces/day cap</li>
+            <li>Error + guardrail traces: always covered, outside cap</li>
+          </ul>
+        </div>
+        <div class="baseline-card">
+          <h3>🔬 B_batch — L2/L3 Harness Batches</h3>
+          <p>Per-run spend on verdict-bearing evaluation. Formula:</p>
+          <p style="font-family:monospace;font-size:12px;color:#79c0ff;margin:0.75rem 0;line-height:1.8;">
+            N = B_monthly / (c_L2 × 1.2 × f_runs)<br/>
+            <span style="color:#8b949e">1.2 = repeatability overhead</span>
+          </p>
+          <ul>
+            <li>CI/CD gate batches: always full coverage</li>
+            <li>Regression batches: parameterized by budget</li>
+            <li>Empirical c_L2 available after 30 days via key metering</li>
+          </ul>
+        </div>
+        <div class="baseline-card">
+          <h3>✂️ Cost Reduction Policies</h3>
+          <ul>
+            <li><strong>DeepEval:</strong> 10–20% subsample; full batch only if RAGAS divergence &gt; 0.15</li>
+            <li><strong>Self-consistency:</strong> 100% on CI/CD gate; 25% on regression batches</li>
+            <li><strong>Tracked-only metrics:</strong> 20% subsample for trend analysis</li>
+            <li><strong>L1-a:</strong> zero cost — no LLM calls ever</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="method-fingerprint-note" style="margin-top:1.5rem;">
+        <strong>What must never be cut:</strong>
+        Repeatability checker · Sample floors (50 L2-only / 100 L3) ·
+        100% error + guardrail trace coverage · CI/CD gate batches (no sampling) ·
+        Judge calibration (50 items, quarterly)
+      </div>
+    </div>
+  </section>
+
+  <!-- JUDGE GOVERNANCE -->
+  <section class="section section-dark">
+    <div class="container">
+      <h2>Judge Governance</h2>
+      <p class="section-sub">
+        Automated evaluation is only as trustworthy as the judge model behind it.
+        Four conditions must hold on every evaluation run.
+      </p>
+
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="problem-icon">🚫</div>
+          <h3>Different Model Family</h3>
+          <p>The judge must be from a different provider or family than the system under test. Enforced at config level — not policy.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">📋</div>
+          <h3>On Approved List</h3>
+          <p>Judge model must be on the platform-maintained approved-for-evaluation list. Unapproved models are rejected at harness startup.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">📌</div>
+          <h3>Version-Pinned</h3>
+          <p>The exact model version is recorded in every evidence record. A version change triggers re-calibration before the next run.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">✅</div>
+          <h3>Calibrated Before Use</h3>
+          <p>One manual calibration run against a 50-item human-labeled sample. Agreement rate ≥ 0.85 required. Quarterly re-calibration in Phase 3.</p>
+        </div>
+      </div>
+
+      <div class="method-fingerprint-note" style="margin-top:1.5rem;">
+        <strong>Two judge models, two roles:</strong>
+        <code style="color:#79c0ff;">PINNED_JUDGE_LLM</code> — calibrated, verdict-bearing, used for L2/L3 only. &nbsp;
+        <code style="color:#79c0ff;">L1B_JUDGE_LLM</code> — cheap model, L1-b online evaluators only, never gates a verdict.
+        The judge model is never overridable by callers — it is a server-side configuration value only.
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE NARRATIVES -->
+  <section class="section">
+    <div class="container">
+      <h2>Three Design Guarantees</h2>
+      <p class="section-sub">
+        These are the structural properties that make the framework defensible —
+        not aspirational goals, but enforced invariants.
+      </p>
+
+      <div class="principles-grid">
+        <div class="principle-card">
+          <span class="principle-num">GUARANTEE 01</span>
+          <h3>Responsible by Design, Not by Audit</h3>
+          <p>
+            The three non-overridable NO-GO conditions — safety violation, critical test case
+            failure, GT dataset invalidated — cannot be bypassed by anyone, including product
+            owners. They are enforced in code. The framework catches problems before production,
+            not after.
+          </p>
+        </div>
+        <div class="principle-card">
+          <span class="principle-num">GUARANTEE 02</span>
+          <h3>Evidence Over Assertion</h3>
+          <p>
+            Every verdict is an immutable, content-hashed record. The hash detects any
+            post-hoc modification. The GT trust tier system ensures reference answers
+            came from source documents, not from the same model family being evaluated.
+            A score without a trail is not a verdict.
+          </p>
+        </div>
+        <div class="principle-card">
+          <span class="principle-num">GUARANTEE 03</span>
+          <h3>Circular Evaluation is Structurally Impossible</h3>
+          <p>
+            The evaluation target, the verdict judge, and the GT generator must all be
+            from different model families — enforced at config level. GT items generated
+            by the same family as the evaluation target are classified Rejected and blocked
+            at upload. The verdict cannot prove itself.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark cta-section">
+    <div class="container center">
+      <h2>See It Applied to a Method Change</h2>
+      <p class="section-sub">
+        Every gate, every artifact, every decision point — mapped to a real
+        method change scenario.
+      </p>
+      <div class="cta-actions">
+        <a href="method-change.html" class="btn-primary">Method Change → Production →</a>
+        <a href="index.html" class="btn-secondary">← Back to Overview</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>AI Evaluation Harness — Method Change Governance Framework · Reference Architecture</p>
+  </footer>
+
+</body>
+</html>

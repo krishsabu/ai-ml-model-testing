@@ -1,158 +1,313 @@
-  <!-- BUDGET MODEL -->
-  <section class="section section-alt">
-    <div class="container">
-      <h2>Bounded Cost by Design</h2>
-      <p class="section-sub">
-        Two separate budget envelopes. Every LLM-call pathway bounded by batch size
-        or daily cap. Verdict-bearing evaluation is never the place to economise.
-      </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Proposed evaluation tiers, evidence records, cost controls, and judge governance for AI method changes."/>
+  <title>How It Works — AI Evaluation Harness</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
 
-      <div class="baseline-grid">
-        <div class="baseline-card">
-          <h3>📡 B_continuous — L1-b Online Evaluators</h3>
-          <p>Runs 24/7 against production traffic. Controlled by daily caps per use case, not monthly batch formulas.</p>
-          <ul>
-            <li>Uses a cheap model (L1B_JUDGE_LLM) — not the calibrated verdict judge</li>
-            <li>Regulated: 500 traces/day cap</li>
-            <li>Critical: 200 traces/day cap</li>
-            <li>Standard: 50 traces/day cap</li>
-            <li>Error + guardrail traces: always covered, outside cap</li>
-          </ul>
-        </div>
-        <div class="baseline-card">
-          <h3>🔬 B_batch — L2/L3 Harness Batches</h3>
-          <p>Per-run spend on verdict-bearing evaluation. Formula:</p>
-          <p style="font-family:monospace;font-size:12px;color:#79c0ff;margin:0.75rem 0;line-height:1.8;">
-            N = B_monthly / (c_L2 × 1.2 × f_runs)<br/>
-            <span style="color:#8b949e">1.2 = repeatability overhead</span>
-          </p>
-          <ul>
-            <li>CI/CD gate batches: always full coverage</li>
-            <li>Regression batches: parameterized by budget</li>
-            <li>Empirical c_L2 available after 30 days via key metering</li>
-          </ul>
-        </div>
-        <div class="baseline-card">
-          <h3>✂️ Cost Reduction Policies</h3>
-          <ul>
-            <li><strong>DeepEval:</strong> 10–20% subsample; full batch only if RAGAS divergence &gt; 0.15</li>
-            <li><strong>Self-consistency:</strong> 100% on CI/CD gate; 25% on regression batches</li>
-            <li><strong>Tracked-only metrics:</strong> 20% subsample for trend analysis</li>
-            <li><strong>L1-a:</strong> zero cost — no LLM calls ever</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="method-fingerprint-note" style="margin-top:1.5rem;">
-        <strong>What must never be cut:</strong>
-        Repeatability checker · Sample floors (50 L2-only / 100 L3) ·
-        100% error + guardrail trace coverage · CI/CD gate batches (no sampling) ·
-        Judge calibration (50 items, quarterly)
-      </div>
+  <nav class="navbar" aria-label="Main navigation">
+    <div class="nav-brand">⚡ AI Evaluation Harness</div>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="how-it-works.html" class="active" aria-current="page">How It Works</a>
+      <a href="method-change.html">Method Change → Production</a>
     </div>
-  </section>
+  </nav>
 
-  <!-- JUDGE GOVERNANCE -->
-  <section class="section section-dark">
-    <div class="container">
-      <h2>Judge Governance</h2>
-      <p class="section-sub">
-        Automated evaluation is only as trustworthy as the judge model behind it.
-        Four conditions must hold on every evaluation run.
-      </p>
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">Reference Architecture · v3.3</div>
+        <h1>Evaluate Changes.<br/>Record Evidence.<br/>Review Release Risk.</h1>
+        <p class="hero-sub">
+          A proposed approach combining operational checks, reference-free
+          evaluation, and ground-truth testing to support release decisions.
+        </p>
+        <p>
+          <strong>Project status:</strong> Documentation only. This website
+          does not execute evaluators, monitor production traffic, store
+          evidence, or enforce release decisions.
+        </p>
+      </div>
+    </section>
 
-      <div class="problem-grid">
-        <div class="problem-card">
-          <div class="problem-icon">🚫</div>
-          <h3>Different Model Family</h3>
-          <p>The judge must be from a different provider or family than the system under test. Enforced at config level — not policy.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">📋</div>
-          <h3>On Approved List</h3>
-          <p>Judge model must be on the platform-maintained approved-for-evaluation list. Unapproved models are rejected at harness startup.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">📌</div>
-          <h3>Version-Pinned</h3>
-          <p>The exact model version is recorded in every evidence record. A version change triggers re-calibration before the next run.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">✅</div>
-          <h3>Calibrated Before Use</h3>
-          <p>One manual calibration run against a 50-item human-labeled sample. Agreement rate ≥ 0.85 required. Quarterly re-calibration in Phase 3.</p>
+    <section class="section">
+      <div class="container">
+        <h2>Proposed Evaluation Tiers</h2>
+        <p class="section-sub">
+          Evaluation can begin before verified reference answers exist.
+          Each tier provides different evidence; none establishes complete
+          system correctness or safety on its own.
+        </p>
+        <div class="baseline-grid">
+          <div class="baseline-card">
+            <h3>L1 — Operational and Policy Signals</h3>
+            <ul>
+              <li><strong>L1-a:</strong> Deterministic checks such as schema validation, error rates, latency, and recorded guardrail events.</li>
+              <li><strong>L1-b:</strong> Sampled model-assisted review of production traces, subject to privacy and access controls.</li>
+              <li>Signals support monitoring and investigation rather than independently authorising release.</li>
+              <li>L1-a avoids model-call charges but still has infrastructure and maintenance costs.</li>
+            </ul>
+          </div>
+          <div class="baseline-card">
+            <h3>L2 — Reference-Free Evaluation</h3>
+            <ul>
+              <li>Assess properties such as relevance, instruction adherence, and grounding in retrieved evidence.</li>
+              <li>Use versioned rubrics and calibrated evaluators where model-assisted scoring is appropriate.</li>
+              <li>Compare candidate results with a versioned baseline.</li>
+              <li>Scores are useful signals, not substitutes for verified factual reference answers.</li>
+            </ul>
+          </div>
+          <div class="baseline-card">
+            <h3>L3 — Ground-Truth Evaluation</h3>
+            <ul>
+              <li>Evaluate against verified reference answers and expected outcomes.</li>
+              <li>Record dataset provenance, review status, coverage, and version.</li>
+              <li>Include critical scenarios and relevant risk segments.</li>
+              <li>Dataset quality and representativeness limit what results can establish.</li>
+            </ul>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="method-fingerprint-note" style="margin-top:1.5rem;">
-        <strong>Two judge models, two roles:</strong>
-        <code style="color:#79c0ff;">PINNED_JUDGE_LLM</code> — calibrated, verdict-bearing, used for L2/L3 only. &nbsp;
-        <code style="color:#79c0ff;">L1B_JUDGE_LLM</code> — cheap model, L1-b online evaluators only, never gates a verdict.
-        The judge model is never overridable by callers — it is a server-side configuration value only.
-      </div>
-    </div>
-  </section>
-
-  <!-- THREE NARRATIVES -->
-  <section class="section">
-    <div class="container">
-      <h2>Three Design Guarantees</h2>
-      <p class="section-sub">
-        These are the structural properties that make the framework defensible —
-        not aspirational goals, but enforced invariants.
-      </p>
-
-      <div class="principles-grid">
-        <div class="principle-card">
-          <span class="principle-num">GUARANTEE 01</span>
-          <h3>Responsible by Design, Not by Audit</h3>
-          <p>
-            The three non-overridable NO-GO conditions — safety violation, critical test case
-            failure, GT dataset invalidated — cannot be bypassed by anyone, including product
-            owners. They are enforced in code. The framework catches problems before production,
-            not after.
-          </p>
-        </div>
-        <div class="principle-card">
-          <span class="principle-num">GUARANTEE 02</span>
-          <h3>Evidence Over Assertion</h3>
-          <p>
-            Every verdict is an immutable, content-hashed record. The hash detects any
-            post-hoc modification. The GT trust tier system ensures reference answers
-            came from source documents, not from the same model family being evaluated.
-            A score without a trail is not a verdict.
-          </p>
-        </div>
-        <div class="principle-card">
-          <span class="principle-num">GUARANTEE 03</span>
-          <h3>Circular Evaluation is Structurally Impossible</h3>
-          <p>
-            The evaluation target, the verdict judge, and the GT generator must all be
-            from different model families — enforced at config level. GT items generated
-            by the same family as the evaluation target are classified Rejected and blocked
-            at upload. The verdict cannot prove itself.
-          </p>
+    <section class="section section-dark">
+      <div class="container">
+        <h2>From Evaluation to Release Decision</h2>
+        <div class="principles-grid">
+          <div class="principle-card">
+            <span class="principle-num">01</span>
+            <h3>Register the Method</h3>
+            <p>
+              Identify the model, prompt, retrieval configuration, workflow,
+              and relevant dependencies. Record the candidate version,
+              baseline, change scope, and risk classification.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">02</span>
+            <h3>Define and Run Checks</h3>
+            <p>
+              Select applicable tiers, datasets, rubrics, and thresholds
+              before reviewing candidate results. An implementation would
+              execute these checks and record failures and missing evidence.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">03</span>
+            <h3>Apply Decision Rules</h3>
+            <p>
+              GO means required criteria and approvals are satisfied.
+              REVIEW covers uncertainty or incomplete evidence.
+              NO-GO applies when a defined blocking condition is met.
+              Missing required evidence must not silently become a pass.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">04</span>
+            <h3>Record Accountability</h3>
+            <p>
+              Preserve results, limitations, reviewer decisions, and release
+              approvals. Deployment enforcement would require integration
+              with the delivery platform and controlled approval permissions.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section section-dark cta-section">
-    <div class="container center">
-      <h2>See It Applied to a Method Change</h2>
-      <p class="section-sub">
-        Every gate, every artifact, every decision point — mapped to a real
-        method change scenario.
-      </p>
-      <div class="cta-actions">
-        <a href="method-change.html" class="btn-primary">Method Change → Production →</a>
-        <a href="index.html" class="btn-secondary">← Back to Overview</a>
+    <section class="section">
+      <div class="container">
+        <h2>Evidence Record Design</h2>
+        <p class="section-sub">
+          A proposed record links evaluation results to the exact method
+          and decision criteria used.
+        </p>
+        <ul>
+          <li>Run identifier, timestamp, candidate version, and baseline version.</li>
+          <li>Dataset version, provenance, and applicable test coverage.</li>
+          <li>Evaluator versions, prompts, rubrics, and configuration.</li>
+          <li>Inputs and outputs where retention is permitted, with sensitive data protected.</li>
+          <li>Scores, threshold outcomes, repeatability results, and unresolved limitations.</li>
+          <li>Decision category, accountable reviewer, approvals, and exception rationale.</li>
+        </ul>
+        <div class="method-fingerprint-note">
+          <strong>Integrity is an implementation requirement:</strong>
+          Content hashes can help detect changes only when compared with
+          a trusted reference. Hashing alone does not make records immutable.
+          Access controls, protected storage, retention rules, and audit
+          logging would need separate implementation and verification.
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <h2>Cost Controls and Coverage</h2>
+        <p class="section-sub">
+          Separate monitoring spend from release-evaluation spend.
+          The settings below are illustrative planning assumptions,
+          not measured costs or validated production policies.
+        </p>
+        <div class="baseline-grid">
+          <div class="baseline-card">
+            <h3>Continuous Monitoring Budget</h3>
+            <p>
+              A proposed L1-b service would sample eligible traces within
+              daily budgets and use a separately governed monitoring judge.
+            </p>
+            <ul>
+              <li>Illustrative daily caps: regulated 500, critical 200, standard 50 traces.</li>
+              <li>Set actual caps using traffic volume, risk, and detection needs.</li>
+              <li>Prioritise error and guardrail events, with explicit capacity and overflow handling.</li>
+              <li>Do not assume monitoring scores are suitable for release verdicts.</li>
+            </ul>
+          </div>
+          <div class="baseline-card">
+            <h3>Batch Evaluation Budget</h3>
+            <p>
+              Estimate affordable batch size from the available monthly
+              budget, planned run frequency, and measured per-item cost.
+            </p>
+            <ul>
+              <li>Allow for repeat evaluations, retries, and provider overheads.</li>
+              <li>A 20% repeatability allowance is an illustrative starting assumption.</li>
+              <li>Measure actual costs during representative pilot runs.</li>
+              <li>If required coverage exceeds budget, escalate rather than silently reducing release checks.</li>
+            </ul>
+          </div>
+          <div class="baseline-card">
+            <h3>Sampling Policies</h3>
+            <ul>
+              <li>Trend-only metrics may use documented sampling.</li>
+              <li>Release gates should cover the full predefined gate suite—not every possible production input.</li>
+              <li>RAGAS and DeepEval are possible integrations, not tools executed by this website.</li>
+              <li>Cross-evaluator comparisons require compatible scales and validated disagreement thresholds.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="method-fingerprint-note">
+          <strong>Validate sample adequacy:</strong>
+          Earlier design examples used floors of 50 L2-only items and
+          100 L3 items. These counts are not statistical guarantees.
+          Coverage, uncertainty, risk segments, and failure prevalence
+          should determine the final evaluation plan.
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark">
+      <div class="container">
+        <h2>Judge Governance</h2>
+        <p class="section-sub">
+          Model-assisted evaluation requires its own quality controls.
+          These are proposed implementation requirements.
+        </p>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <h3>Reduce Shared Bias</h3>
+            <p>
+              Consider a judge from a different model family or provider,
+              supported by human review. Different families may still
+              share training data and biases; separation does not establish
+              independence or eliminate circular evaluation.
+            </p>
+          </div>
+          <div class="problem-card">
+            <h3>Approve Evaluators</h3>
+            <p>
+              Maintain an approved evaluator list with documented use
+              cases and limitations. A backend implementation should
+              validate configuration and reject unsupported evaluators.
+            </p>
+          </div>
+          <div class="problem-card">
+            <h3>Record Versions</h3>
+            <p>
+              Pin model versions where supported and record available
+              identifiers and scoring configuration. Material changes
+              should trigger impact assessment and recalibration.
+            </p>
+          </div>
+          <div class="problem-card">
+            <h3>Calibrate Against Human Labels</h3>
+            <p>
+              Compare judge outputs with reviewed human labels across
+              relevant categories. A 50-item sample and 85% agreement
+              are illustrative starting points, not universal acceptance
+              criteria. Examine class imbalance and high-risk disagreements.
+            </p>
+          </div>
+        </div>
+        <div class="method-fingerprint-note">
+          <strong>Two proposed roles:</strong>
+          <code>PINNED_JUDGE_LLM</code> supports calibrated L2/L3 evaluation;
+          <code>L1B_JUDGE_LLM</code> supports sampled monitoring.
+          Authorised server-side configuration should control these values.
+          This website does not implement that control.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Design Objectives—not Guarantees</h2>
+        <div class="principles-grid">
+          <div class="principle-card">
+            <span class="principle-num">OBJECTIVE 01</span>
+            <h3>Explicit Blocking Conditions</h3>
+            <p>
+              Define blocking conditions such as specified safety-test
+              failures, critical-case failures, or invalid required
+              ground-truth data. Enforcement requires tested decision
+              logic and deployment integration.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">OBJECTIVE 02</span>
+            <h3>Evidence Over Assertion</h3>
+            <p>
+              Connect decisions to traceable evaluation records.
+              Ground-truth answers should have documented sources and
+              appropriate verification; model-generated answers must not
+              be treated as verified merely because they use another family.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">OBJECTIVE 03</span>
+            <h3>Manage Evaluation Bias</h3>
+            <p>
+              Separate generation and evaluation roles where practical,
+              check for data leakage, calibrate judges, and retain human
+              oversight. These controls reduce risk but cannot make
+              evaluation bias structurally impossible.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark cta-section">
+      <div class="container center">
+        <h2>Apply the Design to a Method Change</h2>
+        <p class="section-sub">
+          Explore the proposed artifacts, review stages, and release
+          decision points for an illustrative change scenario.
+        </p>
+        <div class="cta-actions">
+          <a href="method-change.html" class="btn-primary">Method Change → Production →</a>
+          <a href="index.html" class="btn-secondary">← Back to Overview</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
-    <p>AI Evaluation Harness — Method Change Governance Framework · Reference Architecture</p>
+    <p>AI Evaluation Harness · Reference Architecture · Documentation Only</p>
   </footer>
 
 </body>

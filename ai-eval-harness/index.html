@@ -3,84 +3,227 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Evaluation Harness — Method Change Governance</title>
+  <meta name="description" content="A reference architecture for AI evaluation, risk-based release criteria, regression checks, and traceable governance decisions."/>
+  <title>AI Evaluation Harness — Reference Architecture</title>
   <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
 <body>
 
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Main navigation">
     <div class="nav-brand">⚡ AI Evaluation Harness</div>
     <div class="nav-links">
-      <a href="index.html" class="active">Overview</a>
+      <a href="index.html" class="active" aria-current="page">Overview</a>
       <a href="how-it-works.html">How It Works</a>
       <a href="method-change.html">Method Change → Production</a>
     </div>
   </nav>
 
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-badge">Reference Architecture · v3.3</div>
-      <h1>Every AI Method.<br/>Evaluated. Certified.<br/>Auditable.</h1>
-      <p class="hero-sub">
-        A governance framework that delivers GO / REVIEW / NO-GO verdicts
-        backed by immutable evidence records — for every AI method change,
-        across every use case type.
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">Reference Architecture · v3.3</div>
+        <h1>AI Evaluation.<br/>Clear Release Criteria.<br/>Traceable Decisions.</h1>
+        <p class="hero-sub">
+          A reference architecture for evaluating AI method changes,
+          defining GO / REVIEW / NO-GO release criteria, and designing
+          traceable evaluation records.
+        </p>
+        <p>
+          <strong>Project status:</strong> This static website documents
+          the proposed approach. It does not run evaluations, issue
+          certifications, or enforce deployment gates.
+        </p>
+        <div class="hero-actions">
+          <a href="how-it-works.html" class="btn-primary">How It Works →</a>
+          <a href="method-change.html" class="btn-secondary">Method Change Guide →</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Proposed release decision categories">
+        <div class="verdict-badge go">GO</div>
+        <div class="verdict-badge review">REVIEW</div>
+        <div class="verdict-badge nogo">NO-GO</div>
+      </div>
+    </section>
+
+    <section class="section section-dark">
+      <div class="container">
+        <h2>The Problems This Design Addresses</h2>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <div class="problem-icon" aria-hidden="true">🚫</div>
+            <h3>No Gate Between Build and Deploy</h3>
+            <p>
+              Without defined release criteria, teams may rely on informal
+              judgments rather than recorded evaluation evidence when
+              deciding whether an AI change is ready for production.
+            </p>
+          </div>
+          <div class="problem-card">
+            <div class="problem-icon" aria-hidden="true">👻</div>
+            <h3>Silent Regressions</h3>
+            <p>
+              Prompt edits, model upgrades, or retrieval changes can degrade
+              quality. Baseline comparisons help teams identify regressions
+              before release, although test coverage cannot capture every failure.
+            </p>
+          </div>
+          <div class="problem-card">
+            <div class="problem-icon" aria-hidden="true">📋</div>
+            <h3>Incomplete Audit Trails</h3>
+            <p>
+              Without structured records, it can be difficult to establish
+              what was evaluated, which criteria were applied, and who
+              approved the release.
+            </p>
+          </div>
+          <div class="problem-card">
+            <div class="problem-icon" aria-hidden="true">🏗️</div>
+            <h3>Ground Truth Bottleneck</h3>
+            <p>
+              Verified reference datasets take time to build. Initial
+              evaluation can begin with checks that do not require reference
+              answers, while teams develop stronger ground-truth coverage.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Core Design Principles</h2>
+        <p>
+          These principles describe the intended architecture, not
+          executable capabilities included in this website.
+        </p>
+        <div class="principles-grid">
+          <div class="principle-card">
+            <span class="principle-num">01</span>
+            <h3>Method-Centric, Not Model-Centric</h3>
+            <p>
+              The proposed unit of governance is the AI method: a versioned
+              configuration of model, retriever, prompt, and workflow or
+              graph topology. Changes to these components should trigger
+              appropriately scoped re-evaluation.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">02</span>
+            <h3>Evaluation Before Ground Truth</h3>
+            <p>
+              The proposed L1 and L2 tiers begin with checks that do not
+              require verified reference answers. L3 adds ground-truth
+              evaluation when a verified golden dataset is available.
+              Initial checks provide useful evidence, not proof of accuracy.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">03</span>
+            <h3>Evidence-First Decisions</h3>
+            <p>
+              Release decisions should be supported by records of inputs,
+              outputs, scores, configuration versions, criteria, and
+              approvals. Tamper-resistant or immutable storage would require
+              implementation and verification beyond this static website.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">04</span>
+            <h3>Proportionate Evaluation</h3>
+            <p>
+              Evaluation depth should reflect the potential impact of a
+              change. Higher-risk use cases may require broader testing,
+              stricter thresholds, and additional human review.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">05</span>
+            <h3>Versioned Regression Checks</h3>
+            <p>
+              Compare candidate results against an agreed, versioned
+              baseline using consistent datasets and evaluation settings.
+              Define tolerances and blocking criteria before making
+              release decisions.
+            </p>
+          </div>
+          <div class="principle-card">
+            <span class="principle-num">06</span>
+            <h3>Human Accountability</h3>
+            <p>
+              Automated checks should support named decision owners.
+              Ambiguous results, exceptions, and residual risks require
+              documented review rather than an unqualified automated approval.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark">
+      <div class="container">
+        <h2>Proposed Release Decision Categories</h2>
+        <p>
+          The architecture uses three decision categories. This page
+          illustrates their intended meaning; it does not calculate verdicts.
+        </p>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <h3>GO</h3>
+            <p>
+              Required checks meet the agreed criteria, evidence is
+              complete, and necessary approvals are recorded. This is
+              not a guarantee that the system is error-free or safe in
+              every situation.
+            </p>
+          </div>
+          <div class="problem-card">
+            <h3>REVIEW</h3>
+            <p>
+              Evidence is incomplete, results are ambiguous, or an
+              exception requires a documented decision by an accountable
+              reviewer before release.
+            </p>
+          </div>
+          <div class="problem-card">
+            <h3>NO-GO</h3>
+            <p>
+              A required check fails or a blocking risk remains unresolved.
+              Under the proposed policy, the change should not be promoted
+              until the issue is addressed and re-evaluated.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Explore the Architecture</h2>
+        <p>
+          Read the evaluation approach and proposed method-change process.
+          References to evaluators, evidence stores, and deployment gates
+          describe design components, not services running in this repository.
+        </p>
+        <div class="hero-actions">
+          <a href="how-it-works.html" class="btn-primary">Evaluation Approach →</a>
+          <a href="method-change.html" class="btn-secondary">Method Change Guide →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="section section-dark">
+    <div class="container">
+      <p>
+        <strong>AI Evaluation Harness — Reference Architecture</strong>
       </p>
-      <div class="hero-actions">
-        <a href="how-it-works.html" class="btn-primary">How It Works →</a>
-        <a href="method-change.html" class="btn-secondary">Method Change Guide →</a>
-      </div>
+      <p>
+        Documentation only. Production use would require implemented
+        evaluators, validated thresholds, evidence storage, deployment
+        integration, and appropriate human oversight.
+      </p>
     </div>
-    <div class="hero-visual">
-      <div class="verdict-badge go">GO</div>
-      <div class="verdict-badge review">REVIEW</div>
-      <div class="verdict-badge nogo">NO-GO</div>
-    </div>
-  </section>
+  </footer>
 
-  <section class="section section-dark">
-    <div class="container">
-      <h2>The Problem This Solves</h2>
-      <div class="problem-grid">
-        <div class="problem-card">
-          <div class="problem-icon">🚫</div>
-          <h3>No Gate Between Build and Deploy</h3>
-          <p>Teams make informal judgments. No recorded evidence that a method was evaluated before it reached production.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">👻</div>
-          <h3>Silent Regressions</h3>
-          <p>A prompt edit or model upgrade silently degrades quality. No mechanism detects it before users do.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">📋</div>
-          <h3>No Audit Trail</h3>
-          <p>When something goes wrong, there is no record of what was evaluated, against what criteria, by what process, and who signed off.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">🏗️</div>
-          <h3>Ground Truth Bottleneck</h3>
-          <p>Frameworks requiring test datasets before they function are ignored in practice. Most teams cannot invest the upfront effort.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <h2>Core Design Principles</h2>
-      <div class="principles-grid">
-        <div class="principle-card">
-          <span class="principle-num">01</span>
-          <h3>Method-Centric, Not Model-Centric</h3>
-          <p>The unit of governance is the AI method — a versioned configuration of model + retriever + prompt + graph topology. A model upgrade is a method change and triggers scoped re-evaluation.</p>
-        </div>
-        <div class="principle-card">
-          <span class="principle-num">02</span>
-          <h3>Works Without Ground Truth</h3>
-          <p>L1 and L2 evaluation fire from day one. L3 activates when a verified golden dataset exists. No use case is blocked from evaluation by the absence of ground truth.</p>
-        </div>
-        <div class="principle-card">
-          <span class="principle-num">03</span>
-          <h3>Evidence-First Verdicts</h3>
-          <p>A verdict is not a score. It is an immutable record: inputs, outputs, scores
+</body>
+</html>

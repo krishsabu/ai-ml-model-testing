@@ -1,35 +1,48 @@
-# AI Evaluation Harness — Method Change Governance Framework
+# AI Evaluation Harness — Quality and Release Governance
 
-A framework for governing AI method changes from development to production.
-Delivers GO / REVIEW / NO-GO verdicts backed by immutable evidence records
-across every AI use case type — RAG, agentic pipelines, multi-hop retrieval,
-and generative assistants.
+A reference architecture for evaluating changes to AI systems before release.
 
-## What This Is
+This project explains how teams can assess quality, safety and regression risks when changing models, prompts, retrieval settings or agent workflows.
 
-Most AI teams have no systematic gate between "built" and "deployed."
-This framework defines one — structured around the concept of an **AI method**
-(a versioned configuration of model + retriever + prompt + graph topology)
-rather than the underlying model in isolation.
+## Project Status
 
-## Core Ideas
+This folder contains a static documentation website built with HTML, CSS and JavaScript.
 
-- **Method-centric governance** — a model upgrade triggers method re-evaluation
-- **Tiered evaluation** — works without ground truth from day one; builds toward it
-- **Evidence-first verdicts** — every verdict is an immutable audit record, not just a score
-- **Proportionate gates** — evaluation depth scales with risk, not with team size
-- **Regression detection** — every metric delta vs a locked baseline; regressions block promotion
+It presents an evaluation and governance approach. It does not include a backend evaluation service, automated model scoring or an enforced deployment gate.
 
-## Pages
+## What the Framework Describes
 
-- `index.html` — Framework overview and principles
-- `how-it-works.html` — Evaluation tiers, verdict engine, ground truth path
-- `method-change.html` — What triggers re-evaluation and every gate to production
+- **Method-based evaluation:** Assess the combined configuration of the model, prompt, retriever and workflow—not just the model.
+- **Tiered evaluation:** Choose evaluation methods based on available evidence and ground-truth data.
+- **Risk-based checks:** Apply more detailed evaluation to higher-risk changes.
+- **Release decisions:** Define criteria for GO, REVIEW and NO-GO outcomes.
+- **Regression checks:** Compare results against an agreed baseline.
+- **Evidence records:** Design traceable records of results, configuration and release decisions.
 
-## Live Demo
+These are documented design principles, not verified capabilities of an executable evaluation engine in this folder.
 
-[View on GitHub Pages →](https://your-username.github.io/ai-eval-harness)
+## Explore the Documentation
 
----
+- [Framework overview](index.html)
+- [How evaluation works](how-it-works.html)
+- [Method changes and release gates](method-change.html)
 
-Designed as a reference architecture. Adaptable to any enterprise AI portfolio.
+## View Locally
+
+Open `index.html` in your browser to view the website.
+
+The other pages explain the evaluation approach and proposed release process.
+
+## Implementation Roadmap
+
+Possible next steps include:
+
+- An executable evaluation service.
+- Automated tests for verdict rules.
+- Versioned evaluation datasets and baseline comparisons.
+- Persistent evidence storage.
+- CI/CD integration for release checks.
+
+## Scope
+
+This project demonstrates an AI quality engineering design approach. It does not, by itself, verify production deployment, employer adoption or business outcomes.

@@ -3,495 +3,530 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="A proposed risk-based process for evaluating AI configuration changes, recording evidence, and reviewing production readiness."/>
   <title>Method Change → Production — AI Evaluation Harness</title>
   <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
 <body>
 
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Main navigation">
     <div class="nav-brand">⚡ AI Evaluation Harness</div>
     <div class="nav-links">
       <a href="index.html">Overview</a>
       <a href="how-it-works.html">How It Works</a>
-      <a href="method-change.html" class="active">Method Change → Production</a>
+      <a href="method-change.html" class="active" aria-current="page">Method Change → Production</a>
     </div>
   </nav>
 
-  <section class="page-hero">
-    <div class="container">
-      <h1>Method Change → Production</h1>
-      <p>What triggers re-evaluation, what scope is required, and every gate a changed method must pass before it reaches users.</p>
-    </div>
-  </section>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <h1>Method Change → Production</h1>
+        <p>
+          A proposed process for identifying AI configuration changes,
+          selecting evaluation scope, and recording release decisions.
+        </p>
+        <p>
+          <strong>Reference architecture only:</strong> This page describes
+          intended controls. It does not detect changes, execute tests,
+          enforce deployment gates, or certify systems.
+        </p>
+      </div>
+    </section>
 
-  <!-- WHAT IS A METHOD -->
-  <section class="section">
-    <div class="container">
-      <h2>What Is an AI Method?</h2>
-      <p class="section-sub">
-        Governance is method-centric, not model-centric. The unit of evaluation is the
-        <strong>AI method</strong> — a specific versioned configuration of every component
-        that determines system behaviour. A model upgrade is a method change. A prompt edit
-        is a method change. Each produces a new fingerprint hash and triggers scoped re-evaluation.
-      </p>
+    <section class="section">
+      <div class="container">
+        <h2>What Is an AI Method?</h2>
+        <p class="section-sub">
+          An <strong>AI method</strong> is a versioned configuration of
+          components that influence system behaviour. Evaluation should
+          consider the complete configuration rather than the model alone.
+          The components below are examples, not an exhaustive inventory.
+        </p>
 
-      <div class="method-anatomy">
-        <div class="method-component">
-          <div class="component-icon">🧠</div>
-          <div class="component-name">Foundation Model</div>
-          <div class="component-example">GPT-5, Claude, Gemini…</div>
+        <div class="method-anatomy">
+          <div class="method-component">
+            <div class="component-icon" aria-hidden="true">🧠</div>
+            <div class="component-name">Foundation Model</div>
+            <div class="component-example">model version, generation settings</div>
+          </div>
+          <div class="method-plus" aria-hidden="true">+</div>
+          <div class="method-component">
+            <div class="component-icon" aria-hidden="true">🔍</div>
+            <div class="component-name">Retriever Configuration</div>
+            <div class="component-example">index version, top-k, filters</div>
+          </div>
+          <div class="method-plus" aria-hidden="true">+</div>
+          <div class="method-component">
+            <div class="component-icon" aria-hidden="true">📝</div>
+            <div class="component-name">Prompt Versions</div>
+            <div class="component-example">system instructions, examples</div>
+          </div>
+          <div class="method-plus" aria-hidden="true">+</div>
+          <div class="method-component">
+            <div class="component-icon" aria-hidden="true">🕸️</div>
+            <div class="component-name">Workflow and Tools</div>
+            <div class="component-example">routing, permissions, pipeline steps</div>
+          </div>
+          <div class="method-plus" aria-hidden="true">+</div>
+          <div class="method-component">
+            <div class="component-icon" aria-hidden="true">✂️</div>
+            <div class="component-name">Chunking Strategy</div>
+            <div class="component-example">chunk size, overlap, metadata</div>
+          </div>
+          <div class="method-plus" aria-hidden="true">+</div>
+          <div class="method-component">
+            <div class="component-icon" aria-hidden="true">🔢</div>
+            <div class="component-name">Embedding Model</div>
+            <div class="component-example">version, dimensions, preprocessing</div>
+          </div>
         </div>
-        <div class="method-plus">+</div>
-        <div class="method-component">
-          <div class="component-icon">🔍</div>
-          <div class="component-name">Retriever Config</div>
-          <div class="component-example">vector store, top-k, filters</div>
-        </div>
-        <div class="method-plus">+</div>
-        <div class="method-component">
-          <div class="component-icon">📝</div>
-          <div class="component-name">Prompt Versions</div>
-          <div class="component-example">system prompt, few-shot</div>
-        </div>
-        <div class="method-plus">+</div>
-        <div class="method-component">
-          <div class="component-icon">🕸️</div>
-          <div class="component-name">Graph Topology</div>
-          <div class="component-example">agent graph, pipeline steps</div>
-        </div>
-        <div class="method-plus">+</div>
-        <div class="method-component">
-          <div class="component-icon">✂️</div>
-          <div class="component-name">Chunking Strategy</div>
-          <div class="component-example">chunk size, overlap</div>
-        </div>
-        <div class="method-plus">+</div>
-        <div class="method-component">
-          <div class="component-icon">🔢</div>
-          <div class="component-name">Embedding Model</div>
-          <div class="component-example">ada-002, text-embed-3</div>
+
+        <div class="method-fingerprint-note">
+          <strong>Proposed method fingerprint:</strong>
+          Compute a cryptographic hash from a canonical, versioned
+          configuration manifest. Compare manifests to identify changed
+          fields and select evaluation scope. A hash does not capture
+          unrecorded dependencies or external changes; data, tools,
+          policies, and runtime dependencies also need version tracking.
+          Automatic triggering would require a backend implementation.
         </div>
       </div>
+    </section>
 
-      <div class="method-fingerprint-note">
-        <strong>Method Fingerprint Hash:</strong> A deterministic hash of all fields above.
-        Any change to any field produces a new hash — automatically triggering the
-        re-evaluation scope mapped below. The fingerprint is stored in every evidence record,
-        making it auditable which exact configuration was evaluated.
-      </div>
-    </div>
-  </section>
+    <section class="section section-alt">
+      <div class="container">
+        <h2>Change Type → Suggested Evaluation Scope</h2>
+        <p class="section-sub">
+          These are starting points for impact assessment. Final scope
+          depends on use-case risk, component interactions, and available
+          evidence. Combined changes may require broader testing.
+        </p>
 
-  <!-- CHANGE SCOPE -->
-  <section class="section section-alt">
-    <div class="container">
-      <h2>What Changed → What Must Be Re-Evaluated</h2>
-      <p class="section-sub">
-        Re-evaluation scope is proportionate to the changed component.
-        Not every change requires a full suite — but some are non-reducible by design.
-      </p>
-
-      <div class="change-scope-grid">
-
-        <div class="change-card">
-          <div class="change-field">
-            <span class="field-icon">📝</span>
-            <strong>Prompt Version Changed</strong>
-          </div>
-          <span class="scope-badge partial">Quality metrics only</span>
-          <div class="change-metrics">
-            ragas_answer_relevancy · ragas_faithfulness<br/>
-            eval.self_consistency · eval.answer_correctness
-          </div>
-          <div class="change-rationale">
-            Prompt changes affect output quality but not retrieval mechanics or cost structure.
-            Scoped re-evaluation is sufficient and fast.
-          </div>
-        </div>
-
-        <div class="change-card">
-          <div class="change-field">
-            <span class="field-icon">🧠</span>
-            <strong>Foundation Model Changed</strong>
-          </div>
-          <span class="scope-badge full">Full quality + cost + latency</span>
-          <div class="change-metrics">
-            All L2 metrics · All L3 metrics (if GT exists)<br/>
-            latency_p95 · cost_per_query · behavioral signals
-          </div>
-          <div class="change-rationale">
-            A model swap changes output style, faithfulness characteristics,
-            latency profile, and cost simultaneously. Full suite is mandatory.
-          </div>
-        </div>
-
-        <div class="change-card">
-          <div class="change-field">
-            <span class="field-icon">🔍</span>
-            <strong>Retriever Config Changed</strong>
-          </div>
-          <span class="scope-badge retrieval">Retrieval metrics + latency</span>
-          <div class="change-metrics">
-            ragas_faithfulness · eval.hop_efficiency<br/>
-            eval.context_precision · eval.context_recall · latency_p95
-          </div>
-          <div class="change-rationale">
-            Retriever changes directly affect what context is fetched —
-            impacting faithfulness and precision/recall. Latency re-check required.
-          </div>
-        </div>
-
-        <div class="change-card">
-          <div class="change-field">
-            <span class="field-icon">🔢</span>
-            <strong>Embedding Model Changed</strong>
-          </div>
-          <span class="scope-badge noreducible">Full suite — non-reducible</span>
-          <div class="change-metrics">
-            All metrics across L1 · L2 · L3 · L4
-          </div>
-          <div class="change-rationale">
-            Embedding model changes alter the entire retrieval semantic space.
-            There is no safe partial scope — full re-evaluation is non-negotiable.
-          </div>
-        </div>
-
-        <div class="change-card">
-          <div class="change-field">
-            <span class="field-icon">✂️</span>
-            <strong>Chunking Strategy Changed</strong>
-          </div>
-          <span class="scope-badge full">Full quality + retrieval diagnostics</span>
-          <div class="change-metrics">
-            ragas_faithfulness · eval.context_precision<br/>
-            eval.context_recall · eval.hop_efficiency · eval.self_consistency
-          </div>
-          <div class="change-rationale">
-            Chunk boundaries change what evidence is available per retrieval call —
-            affecting faithfulness and context quality throughout the pipeline.
-          </div>
-        </div>
-
-        <div class="change-card">
-          <div class="change-field">
-            <span class="field-icon">🕸️</span>
-            <strong>Agent Graph Topology Changed</strong>
-          </div>
-          <span class="scope-badge noreducible">Full quality + cascade detection</span>
-          <div class="change-metrics">
-            All L2 metrics · eval.cascade_rate<br/>
-            eval.tool_correctness · eval.task_completion · per_step_faithfulness
-          </div>
-          <div class="change-rationale">
-            Graph topology changes affect step ordering, tool routing, and failure
-            propagation paths. Cascade detection is mandatory.
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- PROMOTION PIPELINE -->
-  <section class="section">
-    <div class="container">
-      <h2>Every Gate from Change to Production</h2>
-      <p class="section-sub">
-        A changed method must pass every stage below in sequence.
-        No stage can be skipped. Each produces a recorded artifact.
-      </p>
-
-      <div class="promotion-pipeline">
-
-        <div class="pipeline-step gate-step">
-          <div class="pipeline-icon">🔏</div>
-          <div class="pipeline-content">
-            <h3>1 — Fingerprint Detection</h3>
-            <p>
-              The method fingerprint is computed from all configuration fields.
-              If the hash differs from the registered fingerprint, re-evaluation
-              is automatically triggered. The scope of re-evaluation is determined
-              by which fields changed (see table above).
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">MethodFingerprintManager</span>
-              <span class="pipeline-tag">strategy_id</span>
-              <span class="pipeline-tag">registration_id required</span>
+        <div class="change-scope-grid">
+          <div class="change-card">
+            <div class="change-field">
+              <span class="field-icon" aria-hidden="true">📝</span>
+              <strong>Prompt Version Changed</strong>
+            </div>
+            <span class="scope-badge partial">Quality + safety + affected behaviour</span>
+            <div class="change-metrics">
+              Instruction adherence · grounding · safety tests<br/>
+              Tool behaviour · token usage · latency
+            </div>
+            <div class="change-rationale">
+              Prompt edits can affect retrieval queries, tool calls,
+              safety boundaries, output length, and cost—not just response
+              quality. Expand scope according to the change.
             </div>
           </div>
-        </div>
 
-        <div class="pipeline-connector">↓</div>
-
-        <div class="pipeline-step gate-step">
-          <div class="pipeline-icon">🛡️</div>
-          <div class="pipeline-content">
-            <h3>2 — Safety Pre-flight</h3>
-            <p>
-              Seven binary safety checks run against response content before
-              any scoring begins. Any failure triggers an immediate NO-GO —
-              non-overridable under any circumstance. This gate cannot be
-              reached by delivery pressure.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">SafetyChecker</span>
-              <span class="pipeline-tag">non-overridable</span>
-              <span class="pipeline-tag">immediate NO-GO on failure</span>
+          <div class="change-card">
+            <div class="change-field">
+              <span class="field-icon" aria-hidden="true">🧠</span>
+              <strong>Foundation Model Changed</strong>
+            </div>
+            <span class="scope-badge full">Broad end-to-end evaluation</span>
+            <div class="change-metrics">
+              Applicable L1/L2/L3 checks · safety · task completion<br/>
+              Tool compatibility · latency · cost
+            </div>
+            <div class="change-rationale">
+              Model changes can alter reasoning, response style, grounding,
+              tool use, and operational performance. Broad regression
+              coverage is the proposed default.
             </div>
           </div>
-        </div>
 
-        <div class="pipeline-connector">↓</div>
-
-        <div class="pipeline-step gate-step">
-          <div class="pipeline-icon">📊</div>
-          <div class="pipeline-content">
-            <h3>3 — L2 Scoring (Verdict-Bearing)</h3>
-            <p>
-              RAGAS (authoritative) and DeepEval (supplementary) score the
-              evaluation batch. Self-consistency checks detect non-determinism.
-              Statistical significance is verified before the verdict engine runs —
-              below 50 traces, the run returns REVIEW (inconclusive) by design.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">RAGAS authoritative</span>
-              <span class="pipeline-tag">≥50 traces required</span>
-              <span class="pipeline-tag">repeatability check</span>
-              <span class="pipeline-tag">eval.self_consistency</span>
+          <div class="change-card">
+            <div class="change-field">
+              <span class="field-icon" aria-hidden="true">🔍</span>
+              <strong>Retriever Configuration Changed</strong>
+            </div>
+            <span class="scope-badge retrieval">Retrieval + downstream quality</span>
+            <div class="change-metrics">
+              Retrieval precision/recall · grounding · correctness<br/>
+              Access-control checks · latency · cost
+            </div>
+            <div class="change-rationale">
+              Changes to filters, ranking, or retrieval depth can affect
+              evidence quality and access boundaries. Include downstream
+              answer evaluation and relevant security checks.
             </div>
           </div>
-        </div>
 
-        <div class="pipeline-connector">↓</div>
-
-        <div class="pipeline-step gate-step">
-          <div class="pipeline-icon">📐</div>
-          <div class="pipeline-content">
-            <h3>4 — L3 Ground Truth Scoring (when GT exists)</h3>
-            <p>
-              If a verified golden dataset is available, context precision,
-              context recall, and answer correctness are scored against reference
-              answers. GT trust tier is checked — Tier C GT cannot gate a
-              Critical-tier verdict. Staleness is checked on every run.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">gt_id required</span>
-              <span class="pipeline-tag">GT trust tier A/B/C enforced</span>
-              <span class="pipeline-tag">staleness check</span>
-              <span class="pipeline-tag">critical_pass_rate = 100% required</span>
+          <div class="change-card">
+            <div class="change-field">
+              <span class="field-icon" aria-hidden="true">🔢</span>
+              <strong>Embedding Model Changed</strong>
+            </div>
+            <span class="scope-badge full">Broad retrieval-system regression</span>
+            <div class="change-metrics">
+              Index compatibility · retrieval quality · answer quality<br/>
+              Migration checks · latency · cost
+            </div>
+            <div class="change-rationale">
+              Embedding changes may require re-indexing and can alter
+              ranking across the corpus. Assess compatibility and run
+              representative end-to-end regression tests.
             </div>
           </div>
-        </div>
 
-        <div class="pipeline-connector">↓</div>
-
-        <div class="pipeline-step gate-step">
-          <div class="pipeline-icon">📉</div>
-          <div class="pipeline-content">
-            <h3>5 — L4 Regression Check</h3>
-            <p>
-              Every metric is compared against the locked baseline for this
-              method. A faithfulness delta below −0.05 triggers an immediate
-              NO-GO — overridable only with dual approval and a mandatory
-              override record. Behavioral signal deltas (thumbs-down rate)
-              are tracked alongside metric deltas.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">BaselineManager</span>
-              <span class="pipeline-tag">faithfulness_delta gate</span>
-              <span class="pipeline-tag">dual approval if overriding</span>
-              <span class="pipeline-tag">append-only baseline history</span>
+          <div class="change-card">
+            <div class="change-field">
+              <span class="field-icon" aria-hidden="true">✂️</span>
+              <strong>Chunking Strategy Changed</strong>
+            </div>
+            <span class="scope-badge full">Retrieval + evidence preservation</span>
+            <div class="change-metrics">
+              Context quality · grounding · citation accuracy<br/>
+              Answer completeness · token usage · latency
+            </div>
+            <div class="change-rationale">
+              Chunk boundaries can separate relevant evidence or change
+              context volume. Test document structure, metadata retention,
+              and answer quality across representative content.
             </div>
           </div>
-        </div>
 
-        <div class="pipeline-connector">↓</div>
-
-        <div class="pipeline-step gate-step">
-          <div class="pipeline-icon">⚖️</div>
-          <div class="pipeline-content">
-            <h3>6 — Verdict Engine</h3>
-            <p>
-              All conjunctive gates are evaluated. The worst gate determines
-              the final verdict. GO requires every gate to pass.
-              REVIEW requires manual resolution within 48 hours or an AMS
-              incident is raised. NO-GO blocks the CI/CD pipeline.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">HTTP 200 = GO</span>
-              <span class="pipeline-tag">HTTP 206 = REVIEW</span>
-              <span class="pipeline-tag">HTTP 422 = NO-GO</span>
-              <span class="pipeline-tag">eval.verdict written to Langfuse</span>
+          <div class="change-card">
+            <div class="change-field">
+              <span class="field-icon" aria-hidden="true">🕸️</span>
+              <strong>Workflow or Tool Configuration Changed</strong>
+            </div>
+            <span class="scope-badge full">Workflow + safety + failure recovery</span>
+            <div class="change-metrics">
+              Task completion · tool correctness · permissions<br/>
+              Failure propagation · retries · latency · cost
+            </div>
+            <div class="change-rationale">
+              Routing and tool changes can affect side effects and
+              failure propagation. Include authorisation, recovery,
+              and unintended-action tests.
             </div>
           </div>
-        </div>
-
-        <div class="pipeline-connector">↓ GO only continues below</div>
-
-        <div class="pipeline-step pass-step">
-          <div class="pipeline-icon">👁️</div>
-          <div class="pipeline-content">
-            <h3>7 — Shadow Deployment (48h / 500 queries)</h3>
-            <p>
-              A GO verdict from automated evaluation is necessary but not
-              sufficient. The changed method runs in shadow alongside production,
-              receiving real traffic. faithfulness_delta vs the production baseline,
-              answer divergence rate, cascade rate, latency, and cost are all
-              gated. A named designated reviewer must sign off.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">48h minimum</span>
-              <span class="pipeline-tag">500 real queries</span>
-              <span class="pipeline-tag">designated reviewer required</span>
-              <span class="pipeline-tag">production baseline delta gates</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pipeline-connector">↓</div>
-
-        <div class="pipeline-step pass-step">
-          <div class="pipeline-icon">✅</div>
-          <div class="pipeline-content">
-            <h3>8 — Handoff Record Completed</h3>
-            <p>
-              The handoff record is the final artifact before production promotion
-              is permitted. It is blocked until the shadow deployment summary is
-              present and — for Critical/Regulated tiers — dual approval fields
-              are populated. The record links to the evidence record, override
-              record (if any), and shadow summary.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">HandoffRecordBuilder</span>
-              <span class="pipeline-tag">shadow_deployment_summary required</span>
-              <span class="pipeline-tag">dual approval (Critical/Regulated)</span>
-              <span class="pipeline-tag">was_overridden flag if applicable</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pipeline-connector">↓</div>
-
-        <div class="pipeline-step pass-step">
-          <div class="pipeline-icon">🚀</div>
-          <div class="pipeline-content">
-            <h3>9 — Production Promotion</h3>
-            <p>
-              The method is promoted. The production baseline is locked from
-              live traffic. Certification age begins — Standard: 6 months,
-              Critical: 3 months, Regulated: 1 month. On expiry, re-evaluation
-              is triggered automatically. Any open AMS incident for this
-              strategy_id is resolved.
-            </p>
-            <div class="pipeline-tags">
-              <span class="pipeline-tag">production baseline locked</span>
-              <span class="pipeline-tag">certification age starts</span>
-              <span class="pipeline-tag">AMS incident resolved</span>
-              <span class="pipeline-tag">L4 regression monitoring active</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- BASELINE -->
-  <section class="section section-alt">
-    <div class="container">
-      <h2>Two Baselines — Never Confused</h2>
-      <p class="section-sub">
-        The most common source of misreading the regression gates.
-        These are two distinct objects with different purposes.
-      </p>
-
-      <div class="baseline-grid">
-        <div class="baseline-card">
-          <h3>📊 Evaluation Baseline</h3>
-          <p>Locked from a batch of evaluation-run traces (CI/CD or scheduled regression).</p>
-          <ul>
-            <li>Stored in <code>evaluation-harness-baselines</code> dataset</li>
-            <li>Reference for L4 regression gates</li>
-            <li>Reference for <code>faithfulness_delta</code> Immediate Override</li>
-            <li>Exists from the first non-NO-GO evaluation run</li>
-            <li>Append-only — historical versions never overwritten</li>
-          </ul>
-        </div>
-        <div class="baseline-card">
-          <h3>🏭 Production Baseline</h3>
-          <p>Locked from actual live production traffic after a successful promotion.</p>
-          <ul>
-            <li>Reference for shadow gate delta criteria</li>
-            <li>Does not exist until first promotion</li>
-            <li>First deployment uses absolute thresholds instead</li>
-            <li>Never used in the evaluation gate — evaluation-run data only</li>
-            <li>Updated on each successful promotion</li>
-          </ul>
-        </div>
-        <div class="baseline-card">
-          <h3>🔄 Baseline Lifecycle</h3>
-          <ul>
-            <li><strong>First run, not NO-GO</strong> → baseline locked, version = 1</li>
-            <li><strong>GO verdict</strong> → new version appended, previous superseded</li>
-            <li><strong>REVIEW verdict</strong> → baseline unchanged</li>
-            <li><strong>NO-GO verdict</strong> → baseline unchanged, deployment blocked</li>
-            <li><strong>Tier reclassification upward</strong> → baseline invalidated</li>
-          </ul>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- EVIDENCE RECORD -->
-  <section class="section section-dark">
-    <div class="container">
-      <h2>The Evidence Record</h2>
-      <p class="section-sub">
-        Every evaluation run produces an immutable, content-hashed evidence record.
-        This is what makes a verdict defensible — not the score, but the complete
-        audit trail behind it.
-      </p>
+    <section class="section">
+      <div class="container">
+        <h2>Proposed Promotion Process</h2>
+        <p class="section-sub">
+          Each applicable stage should have defined criteria, an owner,
+          and a recorded outcome. Mark non-applicable stages explicitly
+          with a rationale; do not silently skip required evidence.
+        </p>
 
-      <div class="evidence-schema">
-<span class="schema-comment"># Evidence Record — written per run, immutable, content-hashed at write time</span>
+        <div class="promotion-pipeline">
+          <div class="pipeline-step gate-step">
+            <div class="pipeline-icon" aria-hidden="true">🔏</div>
+            <div class="pipeline-content">
+              <h3>1 — Register and Assess the Change</h3>
+              <p>
+                Record the candidate manifest, compare it with the approved
+                version, and assess affected components and risk. Select
+                the evaluation plan before reviewing candidate scores.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Versioned manifest</span>
+                <span class="pipeline-tag">Change assessment</span>
+                <span class="pipeline-tag">Evaluation plan</span>
+              </div>
+            </div>
+          </div>
 
-<span class="schema-key">registration_id</span>:        <span class="schema-value">"reg_abc123"</span>          <span class="schema-comment"># links to registered method</span>
-<span class="schema-key">method_fingerprint_hash</span>:  <span class="schema-value">"sha256:f3a9..."</span>       <span class="schema-comment"># exact config evaluated</span>
-<span class="schema-key">framework_version</span>:        <span class="schema-value">"3.3"</span>
-<span class="schema-key">verdict</span>:                  <span class="schema-value">"GO"</span>                  <span class="schema-comment"># GO | REVIEW | NO-GO</span>
-<span class="schema-key">verdict_rationale</span>:        <span class="schema-value">"all gates passed"</span>    <span class="schema-comment"># gates passed/failed listed</span>
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
 
-<span class="schema-key">scores</span>:
-  <span class="schema-key">ragas_faithfulness</span>:      <span class="schema-value">0.87</span>
-  <span class="schema-key">ragas_answer_relevancy</span>:  <span class="schema-value">0.91</span>
-  <span class="schema-key">eval.self_consistency</span>:   <span class="schema-value">0.84</span>
-  <span class="schema-key">eval.context_precision</span>:  <span class="schema-value">0.79</span>
-  <span class="schema-key">eval.answer_correctness</span>: <span class="schema-value">0.83</span>
-  <span class="schema-key">faithfulness_delta</span>:       <span class="schema-value">+0.02</span>                 <span class="schema-comment"># vs locked baseline</span>
+          <div class="pipeline-step gate-step">
+            <div class="pipeline-icon" aria-hidden="true">🛡️</div>
+            <div class="pipeline-content">
+              <h3>2 — Safety and Policy Checks</h3>
+              <p>
+                Run the predefined safety and policy suite for the use case.
+                Specified blocking failures should produce NO-GO under the
+                proposed policy. Tested decision logic and deployment
+                integration are needed to enforce this rule.
+                Passing the suite does not prove universal safety.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Risk-specific tests</span>
+                <span class="pipeline-tag">Blocking criteria</span>
+                <span class="pipeline-tag">Failure evidence</span>
+              </div>
+            </div>
+          </div>
 
-<span class="schema-key">judge_model</span>:              <span class="schema-value">"claude-sonnet-4-6"</span>
-<span class="schema-key">judge_calibration_status</span>: <span class="schema-value">"pass"</span>                <span class="schema-comment"># agreement_rate ≥ 0.85</span>
-<span class="schema-key">baseline_version</span>:         <span class="schema-value">4</span>                     <span class="schema-comment"># active at time of verdict</span>
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
 
-<span class="schema-key">gt_dataset_id</span>:            <span class="schema-value">"gt_deepSearch_v3"</span>
-<span class="schema-key">gt_trust_tier</span>:            <span class="schema-value">"B"</span>                   <span class="schema-comment"># A | B | C</span>
-<span class="schema-key">gt_staleness_pct</span>:         <span class="schema-value">3.2</span>                   <span class="schema-comment"># % items with stale source docs</span>
-<span class="schema-key">iaa_score</span>:                <span class="schema-value">0.94</span>                  <span class="schema-comment"># inter-annotator agreement</span>
+          <div class="pipeline-step gate-step">
+            <div class="pipeline-icon" aria-hidden="true">📊</div>
+            <div class="pipeline-content">
+              <h3>3 — L2 Reference-Free Evaluation</h3>
+              <p>
+                Use suitable evaluators and versioned rubrics to assess
+                relevance, grounding, and other applicable properties.
+                RAGAS and DeepEval are possible integrations, not implemented
+                services here. Assess repeatability and uncertainty.
+                A 50-item floor alone does not establish statistical significance.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Calibrated evaluators</span>
+                <span class="pipeline-tag">Coverage assessment</span>
+                <span class="pipeline-tag">Repeatability</span>
+              </div>
+            </div>
+          </div>
 
-<span class="schema-key">behavioral_signals</span>:
-  <span class="schema-key">thumbs_down_rate</span>:        <span class="schema-value">0.031</span>
-  <span class="schema-key">guardrail_trigger_rate</span>:  <span class="schema-value">0.008</span>
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
 
-<span class="schema-key">degraded_mode</span>:            <span class="schema-value">false</span>                 <span class="schema-comment"># true if cascade gate inactive</span>
-<span class="schema-key">bootstrap_mode</span>:           <span class="schema-value">false</span>                 <span class="schema-comment"># true if GT below full composition</span>
-<span class="schema-key">content_hash</span>:             <span class="schema-value">"sha256:9b2f..."</span>       <span class="schema-comment"># tamper detection</span>
-<span class="schema-key">recorded_at</span>:              <span class="schema-value">"2026-08-08T09:51:00Z"</span>
+          <div class="pipeline-step gate-step">
+            <div class="pipeline-icon" aria-hidden="true">📐</div>
+            <div class="pipeline-content">
+              <h3>4 — L3 Ground-Truth Evaluation</h3>
+              <p>
+                Where verified datasets are available, evaluate expected
+                answers and outcomes. Check provenance, freshness, and
+                critical-case coverage. If ground truth is required by the
+                evaluation plan but unavailable or invalid, record that
+                deficiency rather than treating this stage as passed.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Dataset version</span>
+                <span class="pipeline-tag">Verified references</span>
+                <span class="pipeline-tag">Critical scenarios</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
+
+          <div class="pipeline-step gate-step">
+            <div class="pipeline-icon" aria-hidden="true">📉</div>
+            <div class="pipeline-content">
+              <h3>5 — Cross-Tier Regression Assessment</h3>
+              <p>
+                Compare applicable results against the approved evaluation
+                baseline using compatible datasets and settings.
+                Regression assessment spans L1/L2/L3; it is not an additional
+                scoring tier here. Set tolerances before testing and
+                investigate uncertainty and segment-specific failures.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Versioned baseline</span>
+                <span class="pipeline-tag">Predefined tolerances</span>
+                <span class="pipeline-tag">Segment analysis</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
+
+          <div class="pipeline-step gate-step">
+            <div class="pipeline-icon" aria-hidden="true">⚖️</div>
+            <div class="pipeline-content">
+              <h3>6 — Record the Evaluation Decision</h3>
+              <p>
+                GO requires all applicable criteria to be satisfied.
+                REVIEW covers unresolved uncertainty or incomplete evidence.
+                NO-GO applies to blocking failures. A backend should expose
+                the decision in an explicit result field rather than
+                overloading HTTP status codes with business verdicts.
+                CI/CD enforcement remains a proposed integration.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">GO / REVIEW / NO-GO</span>
+                <span class="pipeline-tag">Decision rationale</span>
+                <span class="pipeline-tag">Review owner</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
+
+          <div class="pipeline-step pass-step">
+            <div class="pipeline-icon" aria-hidden="true">👁️</div>
+            <div class="pipeline-content">
+              <h3>7 — Controlled Runtime Validation</h3>
+              <p>
+                Where appropriate, use shadow testing or a controlled rollout.
+                Prevent shadow workflows from taking real-world actions.
+                Apply privacy controls and assess quality, latency, cost,
+                and failure behaviour. A 48-hour window and 500 queries are
+                illustrative planning values, not guarantees of adequate coverage.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Controlled exposure</span>
+                <span class="pipeline-tag">Side-effect isolation</span>
+                <span class="pipeline-tag">Reviewer sign-off</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
+
+          <div class="pipeline-step pass-step">
+            <div class="pipeline-icon" aria-hidden="true">✅</div>
+            <div class="pipeline-content">
+              <h3>8 — Complete Release Handoff</h3>
+              <p>
+                Link evaluation evidence, runtime findings, approvals,
+                known limitations, monitoring ownership, and rollback
+                instructions. Define additional approvals for higher-risk
+                releases. Exceptions must follow documented policy and
+                cannot silently convert a blocking failure into a pass.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Approval record</span>
+                <span class="pipeline-tag">Rollback plan</span>
+                <span class="pipeline-tag">Operational ownership</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-connector" aria-hidden="true">↓</div>
+
+          <div class="pipeline-step pass-step">
+            <div class="pipeline-icon" aria-hidden="true">🚀</div>
+            <div class="pipeline-content">
+              <h3>9 — Promote, Monitor, and Reassess</h3>
+              <p>
+                After authorised promotion, monitor the deployed version
+                and record a representative production baseline.
+                Schedule reassessment according to risk and trigger it
+                after material changes or incidents. This is release
+                approval, not formal certification. Close incidents only
+                after their resolution criteria are verified.
+              </p>
+              <div class="pipeline-tags">
+                <span class="pipeline-tag">Deployment record</span>
+                <span class="pipeline-tag">Monitoring plan</span>
+                <span class="pipeline-tag">Reassessment schedule</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <h2>Two Baselines, Different Purposes</h2>
+        <p class="section-sub">
+          Keep controlled evaluation comparisons separate from observations
+          of live traffic. Both require versioning and documented approval.
+        </p>
+        <div class="baseline-grid">
+          <div class="baseline-card">
+            <h3>📊 Evaluation Baseline</h3>
+            <ul>
+              <li>Results from an explicitly approved reference configuration.</li>
+              <li>Uses versioned test data, rubrics, and evaluator settings.</li>
+              <li>Supports repeatable candidate comparisons.</li>
+              <li>A REVIEW result does not automatically establish a baseline.</li>
+              <li>A candidate GO result does not automatically replace the reference.</li>
+            </ul>
+          </div>
+          <div class="baseline-card">
+            <h3>🏭 Production Baseline</h3>
+            <ul>
+              <li>Observations from a documented live-traffic window.</li>
+              <li>Records deployed version, sampling, and traffic composition.</li>
+              <li>Supports runtime and controlled-rollout comparisons.</li>
+              <li>Traffic shifts can confound apparent metric changes.</li>
+              <li>First deployments need separately approved criteria when no live baseline exists.</li>
+            </ul>
+          </div>
+          <div class="baseline-card">
+            <h3>🔄 Baseline Governance</h3>
+            <ul>
+              <li>Approve baseline creation and replacement explicitly.</li>
+              <li>Preserve historical versions and their provenance.</li>
+              <li>Do not update references from unresolved or failed evaluations.</li>
+              <li>Assess comparability after dataset or evaluator changes.</li>
+              <li>Reassess baseline adequacy after risk reclassification.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark">
+      <div class="container">
+        <h2>Illustrative Evidence Record</h2>
+        <p class="section-sub">
+          The fictional example below shows a proposed record structure.
+          It is not an actual evaluation result, implemented API contract,
+          or proof of production use.
+        </p>
+
+        <pre class="evidence-schema"><code>{
+  "record_type": "illustrative_example",
+  "run_id": "example_run_001",
+  "registration_id": "example_method_001",
+  "method_manifest_version": "candidate_v2",
+  "method_fingerprint_hash": "sha256:example-placeholder",
+  "framework_version": "3.3",
+  "evaluation_plan_version": "example_plan_v1",
+  "risk_classification": "example_standard",
+  "verdict": "REVIEW",
+  "verdict_rationale": [
+    "Required human review remains outstanding"
+  ],
+  "gate_results": {
+    "safety_suite": "PASS",
+    "l2_evaluation": "PASS",
+    "l3_evaluation": "PASS",
+    "regression_assessment": "PASS",
+    "required_review": "PENDING"
+  },
+  "scores": {
+    "grounding_score": 0.87,
+    "answer_relevance_score": 0.91,
+    "answer_correctness_score": 0.83
+  },
+  "score_note": "Fictional values; acceptance depends on the versioned plan",
+  "evaluator_configuration_id": "example_evaluator_config_v1",
+  "judge_version_identifier": "example_pinned_judge",
+  "calibration_record_id": "example_calibration_001",
+  "evaluation_baseline_version": "example_baseline_v1",
+  "dataset_id": "example_verified_dataset",
+  "dataset_version": "v1",
+  "dataset_review_record_id": "example_dataset_review_001",
+  "limitations": [
+    "Coverage is limited to the documented test suite"
+  ],
+  "review_owner": "example_release_reviewer",
+  "approval_status": "PENDING",
+  "deployment_authorised": false,
+  "integrity_reference": "example_protected_hash_reference",
+  "recorded_at": "2026-10-23T12:00:00Z"
+}</code></pre>
+
+        <div class="method-fingerprint-note">
+          <strong>Storage and integrity requirements:</strong>
+          Hashing alone does not create immutable records. An implementation
+          would need trusted integrity references, access controls,
+          protected storage, retention policies, and audit logging.
+          Inputs and outputs should be retained only where permitted,
+          with appropriate protection for sensitive information.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Continue Exploring</h2>
+        <div class="hero-actions">
+          <a href="how-it-works.html" class="btn-primary">Evaluation Approach →</a>
+          <a href="index.html" class="btn-secondary">← Back to Overview</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
-    <p>AI Evaluation Harness — Method Change Governance Framework · Reference Architecture</p>
+    <p>AI Evaluation Harness · Reference Architecture · Documentation Only</p>
   </footer>
 
 </body>
